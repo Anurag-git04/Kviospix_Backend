@@ -8,8 +8,24 @@
     ],
     "routes": [
         {
+            "src": "/auth/(.*)",
+            "dest": "/index.js"
+        },
+        {
+            "src": "/api/albums/(.*)",
+            "dest": "/index.js"
+        },
+        {
+            "src": "/api/images/(.*)",
+            "dest": "/index.js"
+        },
+        {
+            "src": "/",
+            "dest": "/index.js"
+        },
+        {
             "src": "/(.*)",
-            "dest": "index.js"
+            "dest": "/index.js"
         }
     ]
 }
