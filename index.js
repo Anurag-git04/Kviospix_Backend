@@ -1,29 +1,56 @@
 const express = require("express");
-const connectDB = require("./config/connectDB");
+const mongoose = require("mongoose");
+const cors = require("cors");
+require("dotenv").config();
+
 const app = express();
 
-const cors = require("cors");
+// Middleware
 app.use(cors());
-
-require("dotenv").config();
-const port = process.env.PORT || 3000;
-
-connectDB();
-
 app.use(express.json());
 
+const port = process.env.PORT || 3000;
+
+// Global connection state (important for Vercel)
+let isConnected = false;
+
+// MongoDB connection function
+async function connectToMongoDB() {
+  if (isConnected) {
+    console.log("✅ Using existing MongoDB connection");
+    return;
+  }
+
+  try {
+    const conn = await mongoose.connect(process.env.MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      serverSelectionTimeoutMS: 5000,
+    });
+
+    isConnected = conn.connections[0].readyState === 1;
+    console.log("✅ MongoDB connected successfully");
+  } catch (error) {
+    console.error("❌ Error connecting to MongoDB:", error.message);
+  }
+}
+
+// Connect once (works both locally and in Vercel)
+connectToMongoDB();
+
+// Routes
 app.use("/auth", require("./routes/authRouter"));
 app.use("/api/albums", require("./routes/albumRouter"));
 app.use("/api/images", require("./routes/imageRouter"));
 
 app.get("/", (req, res) => {
-  res.send("Hello World!");
+  res.send("Hello World from KviosPix Backend!");
 });
 
-// For local development
+// Local run (only if run directly)
 if (require.main === module) {
   app.listen(port, () => {
-    console.log(`app listening on port ${port}`);
+    console.log(`🚀 Server running on port ${port}`);
   });
 }
 
