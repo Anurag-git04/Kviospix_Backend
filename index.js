@@ -39,7 +39,11 @@ const port = process.env.PORT || 3000;
 // // Connect once (works both locally and in Vercel)
 // connectToMongoDB();
 
-initializeDatabase();
+// initialize DB and make sure any error is logged with stack
+initializeDatabase().catch((err) => {
+  console.error("Failed to initialize database (index.js):", err);
+  // don't crash here; Vercel will show logs for incoming requests
+});
 
 // Routes
 app.use("/auth", require("./routes/authRouter"));
