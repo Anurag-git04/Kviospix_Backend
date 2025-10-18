@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const { initializeDatabase } = require("./config/connectDB");
 require("dotenv").config();
 
 const app = express();
@@ -11,32 +12,34 @@ app.use(express.json());
 
 const port = process.env.PORT || 3000;
 
-// Global connection state (important for Vercel)
-let isConnected = false;
+// // Global connection state (important for Vercel)
+// let isConnected = false;
 
-// MongoDB connection function
-async function connectToMongoDB() {
-  if (isConnected) {
-    console.log("✅ Using existing MongoDB connection");
-    return;
-  }
+// // MongoDB connection function
+// async function connectToMongoDB() {
+//   if (isConnected) {
+//     console.log("✅ Using existing MongoDB connection");
+//     return;
+//   }
 
-  try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      serverSelectionTimeoutMS: 5000,
-    });
+//   try {
+//     const conn = await mongoose.connect(process.env.MONGODB_URI, {
+//       useNewUrlParser: true,
+//       useUnifiedTopology: true,
+//       serverSelectionTimeoutMS: 5000,
+//     });
 
-    isConnected = conn.connections[0].readyState === 1;
-    console.log("✅ MongoDB connected successfully");
-  } catch (error) {
-    console.error("❌ Error connecting to MongoDB:", error.message);
-  }
-}
+//     isConnected = conn.connections[0].readyState === 1;
+//     console.log("✅ MongoDB connected successfully");
+//   } catch (error) {
+//     console.error("❌ Error connecting to MongoDB:", error.message);
+//   }
+// }
 
-// Connect once (works both locally and in Vercel)
-connectToMongoDB();
+// // Connect once (works both locally and in Vercel)
+// connectToMongoDB();
+
+initializeDatabase();
 
 // Routes
 app.use("/auth", require("./routes/authRouter"));
